@@ -1,0 +1,35 @@
+service: healthcheck
+
+package:
+  exclude:
+    - '**'
+    - '!node_modules/node-fetch/**'
+  include:
+    - target/main.js
+
+provider:
+  name: aws
+  runtime: nodejs10.x
+  region: eu-north-1
+  environment:
+    HEALTHCHECK_URLS: 'https://www.google.com,https://www.github.com'
+    DELIVERY_METHOD: sms # email | sms
+    EMAIL_RECIPIENT: name@example.com
+    EMAIL_SENDER: name@example.com
+    SMS_PHONE_NUMBER: '+358123123123'
+    SMS_SENDER_ID: Oops # max 11 alphanumeric characters
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+       - sns:Publish # SMS
+      Resource: "*"
+    - Effect: "Allow"
+      Action:
+       - ses:sendEmail
+      Resource: "*"
+
+functions:
+  check-health:
+    handler: target/main.check
+    events:
+      - schedule: rate(1 hour)

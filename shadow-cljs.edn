@@ -1,0 +1,8 @@
+{:source-paths ["src"]
+ :dependencies []
+ :builds
+ {:lib
+  {:output-to "target/main.js"
+   :target    :node-library
+   :js-options {:js-provider :require}
+   :exports   {:check healthcheck.core/main}}}}
