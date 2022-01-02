@@ -6,7 +6,7 @@
     "node-fetch": "^2.6.1"
   },
   "devDependencies": {
-    "aws-sdk": "^2.553.0",
+    "aws-sdk": "^2.814.0",
     "serverless": "^1.54.0",
     "shadow-cljs": "^2.8.67"
   },
