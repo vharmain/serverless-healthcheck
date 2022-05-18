@@ -1,15 +1,17 @@
 service: healthcheck
 
 package:
-  exclude:
-    - '**'
-    - '!node_modules/node-fetch/**'
-  include:
-    - target/main.js
+  patterns:
+    - '!**'
+    - 'node_modules/node-fetch/**'
+    - 'node_modules/whatwg-url/**'
+    - 'node_modules/webidl-conversions/**'
+    - 'node_modules/tr46/**'
+    - 'target/main.js'      
 
 provider:
   name: aws
-  runtime: nodejs10.x
+  runtime: nodejs16.x  
   region: eu-north-1
   environment:
     HEALTHCHECK_URLS: 'https://www.google.com,https://www.github.com'
@@ -18,15 +20,17 @@ provider:
     EMAIL_SENDER: name@example.com
     SMS_PHONE_NUMBER: '+358123123123'
     SMS_SENDER_ID: Oops # max 11 alphanumeric characters
-  iamRoleStatements:
-    - Effect: "Allow"
-      Action:
-       - sns:Publish # SMS
-      Resource: "*"
-    - Effect: "Allow"
-      Action:
-       - ses:sendEmail
-      Resource: "*"
+  iam:
+    role:
+      statements:
+        - Effect: "Allow"
+          Action:
+           - sns:Publish # SMS
+          Resource: "*"
+        - Effect: "Allow"
+          Action:
+           - ses:sendEmail
+          Resource: "*"
 
 functions:
   check-health:

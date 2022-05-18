@@ -3,12 +3,12 @@
   "version": "0.0.1",
   "main": "index.js",
   "dependencies": {
-    "node-fetch": "^2.6.1"
+    "node-fetch": "^2.6.7"
   },
   "devDependencies": {
     "aws-sdk": "^2.814.0",
-    "serverless": "^1.54.0",
-    "shadow-cljs": "^2.8.67"
+    "serverless": "^3.17.0",
+    "shadow-cljs": "^2.19.0"
   },
   "scripts": {
     "deploy": "npx shadow-cljs release :lib && npx serverless deploy"
