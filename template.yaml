@@ -7,6 +7,8 @@ Globals:
     Timeout: 15
     MemorySize: 128
     Runtime: nodejs24.x
+    Architectures:
+      - arm64
 
 Parameters:
   HealthcheckUrls:
@@ -38,8 +40,10 @@ Parameters:
 Resources:
   HealthcheckFunction:
     Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: makefile
     Properties:
-      Handler: target/main.check
+      Handler: main.check
       CodeUri: .
       Description: Checks health of configured URLs and sends alerts on failure
       Environment:

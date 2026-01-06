@@ -11,7 +11,7 @@
   },
   "scripts": {
     "build": "npx shadow-cljs release :lib",
-    "deploy": "source .env.sh && npm run build && sam deploy --parameter-overrides HealthcheckUrls=$HEALTHCHECK_URLS DeliveryMethod=$DELIVERY_METHOD EmailRecipient=$EMAIL_RECIPIENT EmailSender=$EMAIL_SENDER SmsPhoneNumber=$SMS_PHONE_NUMBER SmsSenderId=$SMS_SENDER_ID"
+    "deploy": "source .env.sh && npm run build && sam build && sam deploy --parameter-overrides HealthcheckUrls=$HEALTHCHECK_URLS DeliveryMethod=$DELIVERY_METHOD EmailRecipient=$EMAIL_RECIPIENT EmailSender=$EMAIL_SENDER SmsPhoneNumber=$SMS_PHONE_NUMBER SmsSenderId=$SMS_SENDER_ID"
   },
   "author": "Valtteri Harmainen",
   "license": "ISC"
