@@ -1,0 +1,29 @@
+# Emacs
+.#*
+*~
+\#*\#
+
+# Editor/IDE
+.idea/
+.vscode/
+*.swp
+
+# Development
+.shadow-cljs/
+.clj-kondo/
+.lsp/
+src/
+
+# Git
+.git/
+.gitignore
+
+# Config
+.env*
+serverless.yml
+samconfig.toml
+CLAUDE.md
+README.md
+
+# Node dev dependencies (only need runtime deps)
+node_modules/.cache/

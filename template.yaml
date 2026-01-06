@@ -1,0 +1,74 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Health checker Lambda that monitors URLs and sends alerts via SNS/SES
+
+Globals:
+  Function:
+    Timeout: 15
+    MemorySize: 128
+    Runtime: nodejs24.x
+
+Parameters:
+  HealthcheckUrls:
+    Type: String
+    Description: Comma-separated URLs to check
+  DeliveryMethod:
+    Type: String
+    Description: Notification method (email or sms)
+    AllowedValues:
+      - email
+      - sms
+  EmailRecipient:
+    Type: String
+    Description: Email recipient for alerts
+    Default: ''
+  EmailSender:
+    Type: String
+    Description: Email sender address
+    Default: ''
+  SmsPhoneNumber:
+    Type: String
+    Description: Phone number for SMS alerts
+    Default: ''
+  SmsSenderId:
+    Type: String
+    Description: SMS sender ID
+    Default: ''
+
+Resources:
+  HealthcheckFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: target/main.check
+      CodeUri: .
+      Description: Checks health of configured URLs and sends alerts on failure
+      Environment:
+        Variables:
+          HEALTHCHECK_URLS: !Ref HealthcheckUrls
+          DELIVERY_METHOD: !Ref DeliveryMethod
+          EMAIL_RECIPIENT: !Ref EmailRecipient
+          EMAIL_SENDER: !Ref EmailSender
+          SMS_PHONE_NUMBER: !Ref SmsPhoneNumber
+          SMS_SENDER_ID: !Ref SmsSenderId
+      Events:
+        ScheduledCheck:
+          Type: Schedule
+          Properties:
+            Schedule: cron(0/15 * * * ? *)
+            Description: Run healthcheck every 15 minutes
+      Policies:
+        - Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action:
+                - sns:Publish
+              Resource: '*'
+            - Effect: Allow
+              Action:
+                - ses:SendEmail
+              Resource: '*'
+
+Outputs:
+  HealthcheckFunction:
+    Description: Healthcheck Lambda Function ARN
+    Value: !GetAtt HealthcheckFunction.Arn

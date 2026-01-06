@@ -1,0 +1,11 @@
+# SAM configuration file
+# Parameter values are passed via command line from environment variables
+
+version = 0.1
+
+[default.deploy.parameters]
+stack_name = "lipas-healthcheck"
+resolve_s3 = true
+s3_prefix = "lipas-healthcheck"
+confirm_changeset = false
+capabilities = "CAPABILITY_IAM"

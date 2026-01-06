@@ -1,14 +1,14 @@
 (ns healthcheck.core
   (:require
-   ["aws-sdk" :as AWS]
-   ["node-fetch" :as node-fetch]
+   ["@aws-sdk/client-ses" :refer [SESClient SendEmailCommand]]
+   ["@aws-sdk/client-sns" :refer [SNSClient PublishCommand]]
    [clojure.string :as string]
    [goog.object :as gobj]
    [goog.string :as gstring]
    [goog.string.format]))
 
-(def ses (new AWS/SES))
-(def sns (new AWS/SNS))
+(def ses (SESClient.))
+(def sns (SNSClient.))
 
 (def icons
   {:ok  "✅"
@@ -26,9 +26,7 @@
                  :MessageAttributes {"AWS.SNS.SMS.SenderID"
                                      {:DataType    "String"
                                       :StringValue sender-id}}}]
-    (-> sns
-        (.publish (clj->js params))
-        .promise
+    (-> (.send sns (PublishCommand. (clj->js params)))
         (.then #(assoc context :result %)))))
 
 (defn ->html [messages]
@@ -51,9 +49,7 @@
                   :Body    {:Html {:Charset charset :Data html}
                             :Text {:Charset charset :Data (pr-str responses)}}}
                  :Source      email-sender}]
-    (-> ses
-        (.sendEmail (clj->js params))
-        .promise
+    (-> (.send ses (SendEmailCommand. (clj->js params)))
         (.then #(assoc context :result %)))))
 
 (defn notify [{:keys [method] :as context}]
@@ -69,7 +65,7 @@
     (assoc context :result (gstring/format "%s" responses))))
 
 (defn fetch [url]
-  (-> (node-fetch url)
+  (-> (js/fetch url)
       (.then (fn [res] [url (if (.-ok res) :ok :nok)]))
       (.catch (fn [_err] [url :nok]))))
 
@@ -80,7 +76,7 @@
 (defn check-health [context]
   (-> (check-urls context)
       (.then maybe-notify)
-      (.then println)))
+      (.then #(doto % println))))
 
 (defn main [_evt _ctx]
   (let [urls (gobj/get js/process.env "HEALTHCHECK_URLS")
@@ -92,4 +88,5 @@
          :email        (gobj/get js/process.env "EMAIL_RECIPIENT")
          :email-sender (gobj/get js/process.env "EMAIL_SENDER")}]
     (println (gstring/format "Checking health for %s" urls))
-    (check-health context)))
+    (-> (check-health context)
+        (.then #(clj->js (map clj->js (:responses %)))))))

@@ -3,15 +3,15 @@
   "version": "0.0.1",
   "main": "index.js",
   "dependencies": {
-    "node-fetch": "^2.6.7"
+    "@aws-sdk/client-ses": "^3.962.0",
+    "@aws-sdk/client-sns": "^3.962.0"
   },
   "devDependencies": {
-    "aws-sdk": "^2.814.0",
-    "serverless": "^3.17.0",
-    "shadow-cljs": "^2.19.0"
+    "shadow-cljs": "^3.3.4"
   },
   "scripts": {
-    "deploy": "npx shadow-cljs release :lib && npx serverless deploy"
+    "build": "npx shadow-cljs release :lib",
+    "deploy": "source .env.sh && npm run build && sam deploy --parameter-overrides HealthcheckUrls=$HEALTHCHECK_URLS DeliveryMethod=$DELIVERY_METHOD EmailRecipient=$EMAIL_RECIPIENT EmailSender=$EMAIL_SENDER SmsPhoneNumber=$SMS_PHONE_NUMBER SmsSenderId=$SMS_SENDER_ID"
   },
   "author": "Valtteri Harmainen",
   "license": "ISC"
